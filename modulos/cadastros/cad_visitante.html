@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Portaria BRG</title>
+	<!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style>
+    .modal {
+	  width: 60% !important;
+	}
+    </style>
+</head>
+
+<body>
+	
+	<!-- Modal Structure PHOTOS -->
+	<!-- Modal Structure PHOTOS -->
+	<!-- Modal Structure PHOTOS -->
+	<div id="modal1" class="modal  modal-fixed-footer">
+		<div class="modal-content">
+			<div class="row">
+				<div class="input-field col s12 col m6">
+					<video id="video" width="320" height="320" autoplay  style="margin-top:-50px"></video>
+				</div>
+				<div class="input-field col s12 col m6">
+					<canvas class="" id="canvas" width="320" height="320" style="margin-top:-30px"></canvas>				
+				</div>
+			</div>							
+		</div>
+		<div class="modal-footer">
+			<a href="#!" class="waves-effect waves-green btn-flat" id="snap">Capturar</a>
+			<a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+		</div>
+	</div>
+	<!-- Modal Structure PHOTOS -->
+	<!-- Modal Structure PHOTOS -->
+	<!-- Modal Structure PHOTOS -->
+	
+	
+	<div class="container">
+		<div class="row">
+			<div class="input-field col s12 col m6">
+				<input id="nome_visitante" type="text" class="validate" autocomplete="off">
+				<label for="nome_visitante">Nome:</label>
+			</div>	
+			<div class="input-field col s12 col m6">
+				<input id="dataNasc" type="text" class="validate datepicker" autocomplete="off">
+				<label for="dataNasc">Data Nascimento:</label>
+			</div>		
+		</div>
+		<div class="row">
+			<div class="input-field col s12 col m9">		
+				<form action="#">
+					<div class="file-field input-field">
+						<div class="btn">
+							<span>Arquivo <i class="material-icons right">attach_file</i></span>
+							<input id="arquivo_imagem" src="" type="file" accept="image/*">
+						</div>
+							<div class="file-path-wrapper">
+							<input class="file-path validate" type="text">
+						</div>
+					</div>
+				</form>
+			</div>	
+			<div class="input-field col s12  col m2"><!-- Modal Trigger -->
+				<a class="waves-effect waves-light btn modal-trigger" href="#modal1" style="margin-top: 25px"><i class="material-icons right">add_a_photo</i>Câmera</a>
+			</div>
+			<div class="input-field col s12  col m1">
+				<a class="waves-effect waves-light right btn" id="btnSalvar" style="margin-top: 25px">Salvar</a>
+			</div>
+		</div>
+	</div>
+	
+	<img class="hiddendiv" id="base64image" src="" width="320" height="320" />	
+	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+	<!--JavaScript at end of body for optimized loading-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+	<script>
+		
+		$('.modal').modal({
+			onCloseStart:function(){
+					context.clearRect(0,0, 320, 320);			
+				}
+			});
+		
+		var anoAtual = new Date();
+		anoAtual = anoAtual.getFullYear();
+		console.log(anoAtual);
+		
+		var datepicker_pt_br = {
+			today: 'Hoje',
+			clear: '', 
+			done: '', 
+			nextMonth: 'Próximo mês', 
+			previousMonth: 'Mês anterior', 
+			weekdaysAbbrev: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'], 
+			weekdaysShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'], 
+			weekdays: ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado'], 
+			monthsShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'], 
+			months: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+		}
+		var options = {
+			container: 'body',
+			showDaysInNextAndPreviousMonths: true,
+			i18n: datepicker_pt_br,
+		   	//outras configurações
+			autoClose: true,
+			format: 'dd/mm/yyyy',
+			changeMonth: true,
+			changeYear: true,
+			yearRange: [1940,anoAtual]
+				
+		}
+		
+		$(".datepicker").datepicker(options); //jQuery init
+		
+		/////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////BLOCO PARA A CAMERA
+		
+		// Grab elements, create settings, etc.
+		var video = document.getElementById('video');
+
+		// Get access to the camera!
+		if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+			// Not adding `{ audio: true }` since we only want video now
+			navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+				//video.src = window.URL.createObjectURL(stream);
+				video.srcObject = stream;
+				video.play();
+			});
+		}
+		
+		// Elements for taking the snapshot
+		var canvas = document.getElementById('canvas');
+		var context = canvas.getContext('2d');
+
+		// Trigger photo take
+		document.getElementById("snap").addEventListener("click", function() {
+			context.drawImage(video, 0, 0, 320, 320);
+			var file = canvas.toDataURL("image/png");
+			console.log(file);
+			console.log('TESTE');
+			$('#base64image').attr('src',file);
+			$('#arquivo_imagem').attr('disabled',true);
+			$('.file-path').text('Arquivo da Câmera!');
+		});
+		
+		//////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////POST DO FORMULARIO
+		
+		$('#btnSalvar').click(function(e){
+			e.preventDefault();
+			var nome = $('#nome_visitante').val();
+			var dataNasc = $('#dataNasc').val()
+			var file = $('#base64image').attr('src');
+			$.post('geraFoto.php',{nomeVisitante:nome,dataNasc:dataNasc,file:file},function(data){
+				console.log(data);
+			
+			})
+		})
+		
+	</script>
+</body>
+</html>
